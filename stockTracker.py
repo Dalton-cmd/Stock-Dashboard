@@ -24,7 +24,7 @@ app.layout = html.Div([
         dcc.Dropdown(
             id='ticker_symbol',
             options=options,
-            value=['TSLA'],
+            value=['AAPL'],
             multi=True
         )
     ], style={'display':'inline-block', 'verticalAlign':'top', 'width':'30%'}),
@@ -64,16 +64,29 @@ app.layout = html.Div([
 def refreshData(n_clicks, options, start_date, end_date):
     start = datetime.strptime(start_date[:10], '%Y-%m-%d')
     end = datetime.strptime(end_date[:10], '%Y-%m-%d')
-    traces = []
-    for tic in options:
-#        stockdf = pdr.get_data_yahoo(tic, start=start_date, end=end_date)
-        stockdf = yf.download(tic,  start=start, end=end)
-        traces.append({'x':stockdf.index, 'y':stockdf.Close,'name':tic})
-    fig = {
-        'data': traces,
-        'layout': {'title':', '.join(options)+' Closing Prices'}
-    }
-    return fig
+    delta = end - start 
+    print(delta)
+    if int(delta.days) > 59:
+        traces = []
+        for tic in options:
+            stockdf = yf.download(tic, start=start, end=end)
+            traces.append({'x':stockdf.index, 'y':stockdf.Close,'name':tic})
+        fig = {
+            'data': traces,
+            'layout': {'title':', '.join(options)+' Closing Prices'}
+        }
+        print(fig)
+        return fig
+    else:
+        traces = []
+        for tic in options:
+            stockdf = yf.download(tic, interval="15m", start=start, end=end)
+            traces.append({'x':stockdf.index, 'y':stockdf.Close,'name':tic})
+        fig = {
+            'data': traces,
+            'layout': {'title':', '.join(options)+' Closing Prices'}
+        }
+        return fig
 
 if __name__ == '__main__':
     app.run_server()
