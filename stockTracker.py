@@ -64,7 +64,7 @@ app.layout = html.Div([
 def refreshData(n_clicks, options, start_date, end_date):
     start = datetime.strptime(start_date[:10], '%Y-%m-%d')
     end = datetime.strptime(end_date[:10], '%Y-%m-%d')
-    delta = end - start 
+    delta = end - start
     print(delta)
     if int(delta.days) > 59:
         traces = []
