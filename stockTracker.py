@@ -17,25 +17,44 @@ for tic in nsdq.index:
 
 app = dash.Dash()
 
-app.layout = html.Div([
-    html.H1('Stock Ticker Dashboard'),
+colors = {
+    'background': 'rgb(80,80,80)',
+    'graphs':'rgb(40,40,40)',
+    'text': 'rgb(50,50,100)'
+}
+
+app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
+    html.H1('Stock Ticker Dashboard',
+        style={
+            'color':colors['text'],
+            'paddingLeft':'48px'}),
     html.Div([
-        html.H3('Select stock symbols:', style={'paddingRight':'30px'}),
+        html.H3('Select stock symbols:',
+            style={
+                'color':colors['text'],
+                'paddingRight':'42px',
+                'width':'30%'}),
         dcc.Dropdown(
             id='ticker_symbol',
             options=options,
             value=['AAPL'],
-            multi=True
+            multi=True,
         )
-    ], style={'display':'inline-block', 'verticalAlign':'top', 'width':'30%'}),
+    ], style={'display':'inline-block',
+                'verticalAlign':'top',
+                'width':'30%',
+                'paddingLeft':'48px'}),
     html.Div([
-        html.H3('Select start and end dates:'),
+        html.H3('Select start and end dates:',
+                style={'paddingLeft':'42px',
+                        'color':colors['text']}),
         dcc.DatePickerRange(
             id='my_date_picker',
             min_date_allowed=datetime(2015, 1, 1),
             max_date_allowed=datetime.today(),
             start_date=datetime(2020, 1, 1),
-            end_date=datetime.today()
+            end_date=datetime.today(),
+            style={'paddingLeft':'40px','paddingBottom':'5px'}
         )
     ], style={'display':'inline-block'}),
     html.Div([
@@ -48,6 +67,9 @@ app.layout = html.Div([
     ], style={'display':'inline-block'}),
     dcc.Graph(
         id='my_graph',
+        style={'color': colors['background'],
+                'paddingLeft':'50px',
+                'paddingRight':'50px'},
         figure={
             'data': [
                 {'x': [1,2], 'y': [3,1]}
@@ -55,6 +77,7 @@ app.layout = html.Div([
         }
     )
 ])
+
 @app.callback(
     Output('my_graph', 'figure'),
     [Input('submit-button', 'n_clicks')],
@@ -65,7 +88,6 @@ def refreshData(n_clicks, options, start_date, end_date):
     start = datetime.strptime(start_date[:10], '%Y-%m-%d')
     end = datetime.strptime(end_date[:10], '%Y-%m-%d')
     delta = end - start
-    print(delta)
     if int(delta.days) > 59:
         traces = []
         for tic in options:
@@ -75,7 +97,6 @@ def refreshData(n_clicks, options, start_date, end_date):
             'data': traces,
             'layout': {'title':', '.join(options)+' Closing Prices'}
         }
-        print(fig)
         return fig
     else:
         traces = []
